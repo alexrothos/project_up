@@ -1,6 +1,6 @@
 from app import app, db
 import requests
-from app.models import Company, CompanyEmployee, Offer
+from app.models import Company, CompanyEmployee, Offer, CompanySchema, CompanyEmployeeSchema, OfferSchema
 from flask import jsonify
 
 # This function is used to get data from the URL
@@ -29,14 +29,14 @@ def index():
     try:
         company_obj = Company.query.filter_by(display_name=company["display_name"]).first()
         if not company_obj:
-            company_obj = Company(display_name=company["display_name"], address_detail=company["address_detail"], city_name=company["city_name"], region_name=company["region_name"], zip_code=company["zip_code"])
+            company_obj = Company(**CompanySchema().load(company))
             db.session.add(company_obj)
             db.session.commit()
             app.logger.info('Company saved successfully')
         else:
             app.logger.info('Company already exists')
     except Exception as e:
-        db.rollback()
+        db.session.rollback()
         app.logger.error('Company data not saved : ' + str(e))
 
     # Save company employee data
@@ -44,14 +44,14 @@ def index():
         for employee in company_employees:
             employee_obj = CompanyEmployee.query.filter_by(email=employee["email"]).first()
             if not employee_obj:
-                employee_obj = CompanyEmployee(company_id=company_obj.id, employee_id=employee["employee_id"], fullname=employee["fullname"], email=employee["email"], phoneNumber=employee["phoneNumber"])
+                employee_obj = CompanyEmployee(**CompanyEmployeeSchema().load(employee), company_id=company_obj.id)
                 db.session.add(employee_obj)
                 db.session.commit()
                 app.logger.info('Employee saved successfully')
             else:
                 app.logger.info('Employee already exists')
     except Exception as e:
-        db.rollback()
+        db.session.rollback()
         app.logger.error('Employee data not saved : ' + str(e))
 
     # # Save offer data
@@ -59,12 +59,12 @@ def index():
         for key in offer:
             if offer[key] == 0:
                 offer[key] = None
-        offer_obj = Offer(company_id=company_obj.id, product_1_budget=offer["product_1_budget"], product_1_issuing_value=offer["product_1_issuing_value"], product_1_mailing_value=offer["product_1_mailing_value"], product_1_value=offer["product_1_value"], product_2_budget=offer["product_2_budget"], product_2_issuing_value=offer["product_2_issuing_value"], product_2_mailing_value=offer["product_2_mailing_value"], product_2_value=offer["product_2_value"], product_3_budget=offer["product_3_budget"], product_3_issuing_value=offer["product_3_issuing_value"], product_3_mailing_value=offer["product_3_mailing_value"], product_3_value=offer["product_3_value"])
+        offer_obj = Offer(**OfferSchema().load(offer), company_id=company_obj.id)
         db.session.add(offer_obj)
         db.session.commit()
         app.logger.info('Offer saved successfully')
     except Exception as e:
-        db.rollback()
+        db.session.rollback()
         app.logger.error('Offer data not saved : ' + str(e))
 
     return jsonify({"message":"Data saved successfully", "code":200})
