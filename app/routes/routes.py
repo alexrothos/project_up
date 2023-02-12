@@ -1,6 +1,6 @@
 from app import app, db
 import requests
-from app.models import Company, CompanyEmployee, Offer#, CompanySchema, CompanyEmployeeSchema, OfferSchema
+from app.models import Company, CompanyEmployee, Offer
 from app.schemas import CompanySchema, CompanyEmployeeSchema, OfferSchema
 from flask import jsonify
 
