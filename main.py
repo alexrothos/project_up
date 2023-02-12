@@ -1,11 +1,20 @@
 import requests
-from flask import Flask, request
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://up_hellas:up_hellas@localhost:5432/project_up'
-db = SQLAlchemy(app)
+db = SQLAlchemy()
+migrate = Migrate()
+
+def create_app():
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://up_hellas:up_hellas@localhost:5432/project_up'
+    db.init_app(app)
+    migrate.init_app(app, db)
+    
+    return app
+
+app = create_app()
 
 class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,13 +70,8 @@ def index():
         return "Unsuccessful request", 401
 
     company, company_employees, offer = data["company"], data["company_employees"], data["offer"]
-    # print('Company:')
-    # print(company)
-    # print('Employees:')
-    # print(company_employees)
-    # print('Offer:')
-    # print(offer)
-    # # Save company data
+
+    # Save company data
     company_obj = Company.query.filter_by(display_name=company["display_name"]).first()
     if not company_obj:
         company_obj = Company(display_name=company["display_name"], address_detail=company["address_detail"], city_name=company["city_name"], region_name=company["region_name"], zip_code=company["zip_code"])
@@ -104,5 +108,5 @@ def index():
 if __name__ == "__main__":
     app.run(port=9500, debug=True)
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()
