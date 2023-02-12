@@ -1,7 +1,9 @@
 from app import app, db
 import requests
 from app.models import Company, CompanyEmployee, Offer
+from flask import jsonify
 
+# This function is used to get data from the URL
 def get_data():
     url = "http://49.12.237.145:5150/"
     headers = {
@@ -12,15 +14,16 @@ def get_data():
         return None
     return response.json()
 
+# The main route, getting and saving data in the database
 @app.route("/")
 def index():
     data = get_data()
     if data is None:
-        return "Unsuccessful request", 401
+        return jsonify({"message":"Unsuccessful request", "code":401})
     try:
         company, company_employees, offer = data["company"], data["company_employees"], data["offer"]
     except Exception as e:
-        return "Invalid data : " + str(e), 400
+        return jsonify({"message":"Invalid data : " + str(e), "code":400})
     
     # Save company data
     try:
@@ -29,12 +32,12 @@ def index():
             company_obj = Company(display_name=company["display_name"], address_detail=company["address_detail"], city_name=company["city_name"], region_name=company["region_name"], zip_code=company["zip_code"])
             db.session.add(company_obj)
             db.session.commit()
-            print('Company saved successfully')
+            app.logger.info('Company saved successfully')
         else:
-            print('Company already exists')
+            app.logger.info('Company already exists')
     except Exception as e:
         db.rollback()
-        print('Company data not saved : ' + str(e))
+        app.logger.error('Company data not saved : ' + str(e))
 
     # Save company employee data
     try:
@@ -44,12 +47,12 @@ def index():
                 employee_obj = CompanyEmployee(company_id=company_obj.id, employee_id=employee["employee_id"], fullname=employee["fullname"], email=employee["email"], phoneNumber=employee["phoneNumber"])
                 db.session.add(employee_obj)
                 db.session.commit()
-                print('Employee saved successfully')
+                app.logger.info('Employee saved successfully')
             else:
-                print('Employee already exists')
+                app.logger.info('Employee already exists')
     except Exception as e:
         db.rollback()
-        print('Employee data not saved : ' + str(e))
+        app.logger.error('Employee data not saved : ' + str(e))
 
     # # Save offer data
     try:
@@ -59,9 +62,9 @@ def index():
         offer_obj = Offer(company_id=company_obj.id, product_1_budget=offer["product_1_budget"], product_1_issuing_value=offer["product_1_issuing_value"], product_1_mailing_value=offer["product_1_mailing_value"], product_1_value=offer["product_1_value"], product_2_budget=offer["product_2_budget"], product_2_issuing_value=offer["product_2_issuing_value"], product_2_mailing_value=offer["product_2_mailing_value"], product_2_value=offer["product_2_value"], product_3_budget=offer["product_3_budget"], product_3_issuing_value=offer["product_3_issuing_value"], product_3_mailing_value=offer["product_3_mailing_value"], product_3_value=offer["product_3_value"])
         db.session.add(offer_obj)
         db.session.commit()
-        print('Offer saved successfully')
+        app.logger.info('Offer saved successfully')
     except Exception as e:
         db.rollback()
-        print('Offer data not saved : ' + str(e))
+        app.logger.error('Offer data not saved : ' + str(e))
 
-    return "Data saved successfully", 200
+    return jsonify({"message":"Data saved successfully", "code":200})
