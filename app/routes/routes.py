@@ -1,6 +1,7 @@
 from app import app, db
 import requests
-from app.models import Company, CompanyEmployee, Offer, CompanySchema, CompanyEmployeeSchema, OfferSchema
+from app.models import Company, CompanyEmployee, Offer#, CompanySchema, CompanyEmployeeSchema, OfferSchema
+from app.schemas import CompanySchema, CompanyEmployeeSchema, OfferSchema
 from flask import jsonify
 
 # This function is used to get data from the URL
@@ -54,7 +55,7 @@ def index():
         db.session.rollback()
         app.logger.error('Employee data not saved : ' + str(e))
 
-    # # Save offer data
+    # Save offer data
     try:
         for key in offer:
             if offer[key] == 0:
