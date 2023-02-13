@@ -71,7 +71,7 @@ flask run
 ### Build with:
 
 [![Python](https://img.shields.io/badge/Python-3.x-brightgreen.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/Flask-1.1.2-brightgreen)](https://flask.palletsprojects.com/en/1.1.x/)
+[![Flask](https://img.shields.io/badge/Flask-2.2.2-brightgreen)](https://flask.palletsprojects.com/en/2.2.x/)
 [![Marshmallow](https://img.shields.io/badge/Marshmallow-3.x-brightgreen)](https://marshmallow.readthedocs.io/en/stable/)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-1.3.x-brightgreen)](https://docs.sqlalchemy.org/en/13/index.html)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13.x-brightgreen)](https://www.postgresql.org/docs/13/index.html)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.x-brightgreen)](https://docs.sqlalchemy.org/en/13/index.html)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14.x-brightgreen)](https://www.postgresql.org/docs/14/index.html)
